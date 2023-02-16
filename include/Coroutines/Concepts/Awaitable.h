@@ -1,10 +1,14 @@
 #pragma once
 
 #include <concepts>
-#include <coroutine>
+//#include <coroutine>
+#include <experimental/coroutine>
 #include <type_traits>
 #include <utility>
 
+namespace std {
+    using namespace experimental;
+}
 
 namespace Coroutines::Concepts {
 template<typename T>

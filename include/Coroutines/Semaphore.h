@@ -1,7 +1,11 @@
 #pragma once
 
 #include <atomic>
-#include <coroutine>
+//#include <coroutine>
+#include <experimental/coroutine>
+namespace std {
+    using namespace experimental;
+}
 #include <mutex>
 
 #include "StopSignal.h"

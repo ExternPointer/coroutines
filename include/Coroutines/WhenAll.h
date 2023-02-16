@@ -4,7 +4,11 @@
 #include "Private/VoidValue.h"
 
 #include <atomic>
-#include <coroutine>
+//#include <coroutine>
+#include <experimental/coroutine>
+namespace std {
+    using namespace experimental;
+}
 #include <ranges>
 #include <tuple>
 #include <vector>
@@ -80,7 +84,7 @@ namespace Private {
     template<typename... task_types>
     class WhenAllReadyAwaitable<std::tuple<task_types...>> {
     public:
-        explicit WhenAllReadyAwaitable( task_types&&... tasks ) noexcept( std::conjunction_v<std::is_nothrow_move_constructible_v<task_types>...> )
+        explicit WhenAllReadyAwaitable( task_types&&... tasks ) noexcept( std::is_nothrow_move_constructible_v<task_types...> )
             : m_latch( sizeof...( task_types ) )
             , m_tasks( std::move( tasks )... ) {
         }
@@ -428,7 +432,7 @@ namespace Private {
         coroutine_handle_type m_coroutine;
     };
 
-    template<Concepts::CAwaitable awaitable, typename return_type = Concepts::CAwaitableTraits<awaitable&&>::TAwaiterResult>
+    template<Concepts::CAwaitable awaitable, typename return_type = typename Concepts::CAwaitableTraits<awaitable&&>::TAwaiterResult>
     static auto MakeWhenAllTask( awaitable a ) -> WhenAllTask<return_type> {
         if constexpr( std::is_void_v<return_type> ) {
             co_await static_cast<awaitable&&>( a );
@@ -445,9 +449,9 @@ template<Concepts::CAwaitable... awaitables_type>
     return Private::WhenAllReadyAwaitable<std::tuple<Private::WhenAllTask<typename Concepts::CAwaitableTraits<awaitables_type>::TAwaiterResult>...>>(
         std::make_tuple( Private::MakeWhenAllTask( std::move( awaitables ) )... ) );
 }
-
+/*
 template<std::ranges::range range_type, Concepts::CAwaitable awaitable_type = std::ranges::range_value_t<range_type>,
-         typename return_type = Concepts::CAwaitableTraits<awaitable_type>::TAwaiterResult>
+         typename return_type = typename Concepts::CAwaitableTraits<awaitable_type>::TAwaiterResult>
 [[nodiscard]] auto WhenAll( range_type awaitables ) -> Private::WhenAllReadyAwaitable<std::vector<Private::WhenAllTask<return_type>>> {
     std::vector<Private::WhenAllTask<return_type>> output_tasks;
     if constexpr( std::ranges::sized_range<range_type> ) {
@@ -458,5 +462,5 @@ template<std::ranges::range range_type, Concepts::CAwaitable awaitable_type = st
     }
     return Private::WhenAllReadyAwaitable( std::move( output_tasks ) );
 }
-
+*/
 } // namespace Coroutines

@@ -2,7 +2,11 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <coroutine>
+//#include <coroutine>
+#include <experimental/coroutine>
+namespace std {
+    using namespace experimental;
+}
 #include <deque>
 #include <functional>
 #include <mutex>
@@ -15,6 +19,9 @@
 #include "Concepts/RangeOf.h"
 #include "Event.h"
 #include "Task.h"
+
+#include "Jthread/jthread.hpp"
+#include "Jthread/condition_variable_any2.hpp"
 
 
 namespace Coroutines {
@@ -71,7 +78,7 @@ public:
     }
 
     auto resume( std::coroutine_handle<> handle ) noexcept -> void;
-
+/*
     template<Coroutines::Concepts::CRangeOf<std::coroutine_handle<>> range_type>
     auto resume( const range_type& handles ) noexcept -> void {
         m_size.fetch_add( std::size( handles ), std::memory_order::release );
@@ -95,7 +102,7 @@ public:
 
         m_waitCv.notify_one();
     }
-
+*/
     [[nodiscard]] auto yield() -> Operation {
         return Schedule();
     }
@@ -120,7 +127,7 @@ private:
     std::vector<std::jthread> m_threads;
 
     std::mutex m_waitMutex;
-    std::condition_variable_any m_waitCv;
+    std::condition_variable_any2 m_waitCv;
     std::deque<std::coroutine_handle<>> m_queue;
     auto Executor( std::stop_token stop_token, std::size_t idx ) -> void;
     auto ScheduleImpl( std::coroutine_handle<> handle ) noexcept -> void;

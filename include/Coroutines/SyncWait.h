@@ -3,6 +3,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
+#include <thread>
 
 #include "Concepts/Awaitable.h"
 #include "Concepts/Executor.h"
@@ -183,7 +184,7 @@ namespace Private {
         TCoroutine m_coroutine;
     };
 
-    template<Concepts::CAwaitable TAwaitable, typename TResult = Concepts::CAwaitableTraits<TAwaitable&&>::TAwaiterResult>
+    template<Concepts::CAwaitable TAwaitable, typename TResult = typename Concepts::CAwaitableTraits<TAwaitable&&>::TAwaiterResult>
     static auto MakeSyncWaitTask( TAwaitable&& a ) -> SyncWaitTask<TResult> {
         if constexpr( std::is_void_v<TResult> ) {
             co_await std::forward<TAwaitable>( a );
