@@ -80,7 +80,7 @@ namespace Private {
     template<typename... task_types>
     class WhenAllReadyAwaitable<std::tuple<task_types...>> {
     public:
-        explicit WhenAllReadyAwaitable( task_types&&... tasks ) noexcept( std::conjunction_v<std::is_nothrow_move_constructible_v<task_types>...> )
+        explicit WhenAllReadyAwaitable( task_types&&... tasks ) noexcept( std::conjunction_v<std::is_nothrow_move_constructible<task_types>...> )
             : m_latch( sizeof...( task_types ) )
             , m_tasks( std::move( tasks )... ) {
         }
