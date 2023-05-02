@@ -11,11 +11,16 @@
 #include <thread>
 #include <variant>
 #include <vector>
+#include <thread>
 
 #include "Concepts/RangeOf.h"
 #include "Event.h"
 #include "Task.h"
 
+#ifdef __clang__
+#include "Private/Jthread/jthread.hpp"
+#include "Private/Jthread/condition_variable_any2.hpp"
+#endif
 
 namespace Coroutines {
 
@@ -120,7 +125,11 @@ private:
     std::vector<std::jthread> m_threads;
 
     std::mutex m_waitMutex;
+#ifdef __clang__
+    std::condition_variable_any2 m_waitCv;
+#else
     std::condition_variable_any m_waitCv;
+#endif
     std::deque<std::coroutine_handle<>> m_queue;
     auto Executor( std::stop_token stop_token, std::size_t idx ) -> void;
     auto ScheduleImpl( std::coroutine_handle<> handle ) noexcept -> void;

@@ -1,4 +1,4 @@
-It is fork of [cppcoro](https://github.com/lewissbaker/cppcoro)
+Forked from [cppcoro](https://github.com/lewissbaker/cppcoro)
 
 Changes:
 1. Adjusted for C++23
