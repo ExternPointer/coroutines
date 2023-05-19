@@ -428,7 +428,7 @@ namespace Private {
         coroutine_handle_type m_coroutine;
     };
 
-    template<Concepts::CAwaitable awaitable, typename return_type = Concepts::CAwaitableTraits<awaitable&&>::TAwaiterResult>
+    template<Concepts::CAwaitable awaitable, typename return_type = typename Concepts::CAwaitableTraits<awaitable&&>::TAwaiterResult>
     static auto MakeWhenAllTask( awaitable a ) -> WhenAllTask<return_type> {
         if constexpr( std::is_void_v<return_type> ) {
             co_await static_cast<awaitable&&>( a );
@@ -447,7 +447,7 @@ template<Concepts::CAwaitable... awaitables_type>
 }
 
 template<std::ranges::range range_type, Concepts::CAwaitable awaitable_type = std::ranges::range_value_t<range_type>,
-         typename return_type = Concepts::CAwaitableTraits<awaitable_type>::TAwaiterResult>
+         typename return_type = typename Concepts::CAwaitableTraits<awaitable_type>::TAwaiterResult>
 [[nodiscard]] auto WhenAll( range_type awaitables ) -> Private::WhenAllReadyAwaitable<std::vector<Private::WhenAllTask<return_type>>> {
     std::vector<Private::WhenAllTask<return_type>> output_tasks;
     if constexpr( std::ranges::sized_range<range_type> ) {
